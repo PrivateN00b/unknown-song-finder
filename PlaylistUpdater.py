@@ -10,7 +10,10 @@ from SongFinder import SongFinder
 
 #Spotify base API: https://api.spotify.com/v1/
 
-PlaylistsURL = "https://api.spotify.com/v1/users/x9xbdeshzgrm2fsis001f7rwm/playlists"
+#Insert your userID in the userID variable
+#How to get userID: Spotify -> Account -> copy the username with the random strings
+userID = "Hey Gleb, did you take a paper clip?"
+PlaylistsURL = f"https://api.spotify.com/v1/users/{userID}/playlists"
 #Go to and get token: https://developer.spotify.com/console/post-playlist-tracks/?playlist_id=&position=&uris=
 token = "BQCLRwlLSkof53Rwl14DUPFalUtJ0bBwUcwf31A9f7y1Ks49GotZT3-GY0M7D12YGpzHZnVBJhTonsBS0ZDf0XcCK_U6rayvMqElR3G11CWNyXu22J7w-w-x_gb7_0QoM1zIVOE2jXSBsZ-J_ZjfqWSGvkcnxXdDKAQsRvi0dzxuVzt2r9vtGPL5uf4rA6kKcKniQuQDyeW9BfHdyzxiGQQBrMww9VmxdlxeoaLh8Pq5zA"
 
