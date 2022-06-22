@@ -14,8 +14,8 @@ import json
 import base64
 
 # Some global variables
-clientID = 'a32a39b5f60b45ef8fe83a2d63f7bd8e' # Necessary for auth
-clientSecret = '74dbf39966bf4daab76662d946107a06' # Necessary for auth
+clientID = 'insert ID here' # Necessary for auth
+clientSecret = 'Insert secret here' # Necessary for auth
 accessToken = "" # Token from the auth response
 tokenType = "" # Token type from the auth response
 expiresIn = 0 # This token will expire in x seconds
