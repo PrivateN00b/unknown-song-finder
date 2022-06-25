@@ -1,5 +1,6 @@
 import requests
 from Auth import Auth
+from Others.Exceptions.CustomExceptions import NotFoundError
 
 class SpotifyRecommendation:
     
@@ -11,6 +12,7 @@ class SpotifyRecommendation:
     
     def GetTrackIDs(self, data: dict):
         """Selects the IDs from the dictionary JSON object and returns it."""
+        
         recommendedTrackIDs = list()
         for currentTrack in data['tracks']:
             recommendedTrackIDs.append(currentTrack['id'])
@@ -18,46 +20,80 @@ class SpotifyRecommendation:
         return recommendedTrackIDs
     
     def DoesGenreExists(self, genre: str):
-        """Returns if the genre seed exists."""
-        response = requests.get(
-            url='https://api.spotify.com/v1/recommendations/available-genre-seeds',
-            headers={
-            'Authorization': f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
-            }
-        )
-        
-        # Checks if the token has expired
-        if response.status_code == 401:
-            self.auth.RefreshToken()         
-            return self.DoesGenreExists(genre)         
+        """Returns NotFoundError/string depending on the genre seed existence."""
+        # Checking if the item string is blank
+        if genre.strip():
+            
+            response = requests.get(
+                url='https://api.spotify.com/v1/recommendations/available-genre-seeds',
+                headers={
+                'Authorization': f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
+                }
+            )
+            
+            # Checks if the token has expired
+            if response.status_code == 401:
+                self.auth.RefreshToken()         
+                return self.DoesGenreExists(genre)         
+            elif response.status_code == 200:
+                foundGenresCount = 0
+                foundGenresOutput = ""
+                
+                # Checking all genres each by each
+                for currentGenre in genre.split(','):
+                    if currentGenre in list(response.json()['genres']):
+                        foundGenresOutput += f"{currentGenre} have been successfully found.\n"
+                        foundGenresCount += 1
+                
+                # Checking if we have found all the items or not
+                if foundGenresCount == len(genre.split(',')):
+                    return foundGenresOutput
+                else:
+                    raise NotFoundError(f"""Unable to find {genre}(s).
+                                Approved ones: {foundGenresOutput}
+                                There is/are {len(genre.split(',')) - foundGenresCount} genre(s) that couldn't be found.
+                                """)    
         else:
-            xd = response.json()
-            if genre in response.json()['genres']:
-                return True
-            else:
-                return False 
+            return "You have decided to leave this blank."
     
     def DoesItemExists(self, item: str, type: str):
-        # Creating query URL
-        queryUrl = f"?q=artist%3A{item.replace(' ', '+')}&type={type}"
-        # Initiaiting GET request
-        response = requests.get(
-                    url=f"https://api.spotify.com/v1/search{queryUrl}",
-                    headers={
-                    "Authorization": f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
-                    })    
-        
-        # Checks if the token has expired
-        if response.status_code == 401:
-            self.auth.RefreshToken()         
-            return self.DoesItemExists(item, type)         
-        else:
-            xd = response.json()
-            if len(response.json()[f'{type}s']['items']) >= 1:
-                return True
+        """Returns NotFoundError/string depending on the item seed existence."""
+        # Checking if the item string is blank
+        if item.strip():
+            
+            foundItemsCount = 0
+            foundItemsOutput = ""
+            
+            for currentItem in item.split(','):
+                # Creating query URL
+                queryUrl = f"artist%3A{currentItem.replace(' ', '%20')}"
+                # Initiaiting GET request
+                response = requests.get(
+                            url=f"https://api.spotify.com/v1/search?q={queryUrl}&type={type}",
+                            headers={
+                            "Authorization": f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
+                            })    
+                    
+                # Checks if the token has expired (401), if not (200) then the tracks will be returned   
+                if response.status_code == 401:
+                    self.auth.RefreshToken()         
+                    return self.DoesItemExists(item, type)         
+                elif response.status_code == 200:
+                    if len(response.json()[f'{type}s']['items']) >= 1:
+                        foundItemsCount += 1
+                        foundItemsOutput += f"{currentItem} {type} have been successfully found.\n"            
+            
+            # Checking if we have found all the items or not
+            if foundItemsCount == len(item.split(',')):
+                return foundItemsOutput
             else:
-                return False          
-    
+                raise NotFoundError(f"""Unable to find {item} {type}(s).
+                                    Approved ones: {foundItemsOutput}
+                                    There is/are {len(item.split(',')) - foundItemsCount} {type}(s) that couldn't be found.
+                                    """)                 
+        else:
+            return "You have decided to leave this blank."
+        
     # Spotify's recommendation API
     def GetRecommendations(self, seedArtists: str = None, seedGenres: str = None, seedTracks: str = None,
                            limit: int = 10, market: str = 'US', targetAcousticness: float = None,
@@ -86,7 +122,7 @@ class SpotifyRecommendation:
                 'target_valence': targetValence
             })
            
-        # Checks if the token has expired
+        # Checks if the token has expired (401), if not (200) then the tracks will be returned
         if response.status_code == 401:
             self.auth.RefreshToken()
             
@@ -97,5 +133,7 @@ class SpotifyRecommendation:
                                         targetSpeechiness, targetTempo, targetTimeSignature, targetValence)
             
             return self.GetTrackIDs(dict(recommendationResult))
+        elif response.status_code == 200:
+            return self.GetTrackIDs(dict(response.json()))
         else:
             return response.json()
