@@ -14,9 +14,8 @@ import requests
 import json
 import base64
 
-from Auth import Auth
+from SpotifyScripts.Auth import Auth
 
-@dataclass
 class SpotifySongGatherer:
     
     # Some global variables/attributes
@@ -25,6 +24,7 @@ class SpotifySongGatherer:
     def __init__(self, auth: Auth):
         self.auth = auth
         self.auth.Authorize()
+        # self.auth.RefreshToken()
        
     def SearchTracks(self, q: str, tp: list, market: str, offset: int, limit: int):
         """Search for tracks duuuh 
@@ -49,8 +49,8 @@ class SpotifySongGatherer:
         response = requests.get(
                     url=f"https://api.spotify.com/v1/search{queryUrl}",
                     headers={
-                    "Authorization": f"{self.auth.tokenType} {self.auth.accessToken}"
-                    })    
+                'Authorization': f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
+                })    
         return response.json()
     
     def GetTracksAudioFeatures(self, ids):
@@ -58,8 +58,8 @@ class SpotifySongGatherer:
         response = requests.get(
             url=f"https://api.spotify.com/v1/audio-features{queryUrl}",
             headers={
-            "Authorization": f"{self.auth.tokenType} {self.auth.accessToken}"
-            })
+                'Authorization': f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
+                })
         return response.json()
         
     # Gets all of the avalaible genres
@@ -67,8 +67,8 @@ class SpotifySongGatherer:
         response = requests.get(
             url='https://api.spotify.com/v1/recommendations/available-genre-seeds',
             headers={
-            'Authorization': f"{self.auth.tokenType} {self.auth.accessToken}"
-            }
+                'Authorization': f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
+                }
         )
         return response.json()
         

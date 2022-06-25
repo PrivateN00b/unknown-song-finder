@@ -1,5 +1,7 @@
+from inspect import currentframe
+from attr import dataclass
 import requests
-from Auth import Auth
+from SpotifyScripts.Auth import Auth
 from Others.Exceptions.CustomExceptions import NotFoundError
 
 class SpotifyRecommendation:
@@ -9,8 +11,9 @@ class SpotifyRecommendation:
     def __init__(self, auth: Auth):
         self.auth = auth
         self.auth.Authorize()
+        # self.auth.RefreshToken()
     
-    def GetTrackIDs(self, data: dict):
+    def GetItemIDs(self, data: dict):
         """Selects the IDs from the dictionary JSON object and returns it."""
         
         recommendedTrackIDs = list()
@@ -63,6 +66,7 @@ class SpotifyRecommendation:
             
             foundItemsCount = 0
             foundItemsOutput = ""
+            ids: str = ""
             
             for currentItem in item.split(','):
                 # Creating query URL
@@ -81,11 +85,12 @@ class SpotifyRecommendation:
                 elif response.status_code == 200:
                     if len(response.json()[f'{type}s']['items']) >= 1:
                         foundItemsCount += 1
-                        foundItemsOutput += f"{currentItem} {type} have been successfully found.\n"            
+                        foundItemsOutput += f"{currentItem} {type} have been successfully found.\n"
+                        ids += f"{response.json()[f'{type}s']['items'][0]['id']},"                         
             
             # Checking if we have found all the items or not
             if foundItemsCount == len(item.split(',')):
-                return foundItemsOutput
+                return foundItemsOutput, ids[0:len(ids) - 1]
             else:
                 raise NotFoundError(f"""Unable to find {item} {type}(s).
                                     Approved ones: {foundItemsOutput}
@@ -132,8 +137,8 @@ class SpotifyRecommendation:
                                         targetLiveness, targetLoudness, targetMode, targetPopularity,
                                         targetSpeechiness, targetTempo, targetTimeSignature, targetValence)
             
-            return self.GetTrackIDs(dict(recommendationResult))
+            return self.GetItemIDs(dict(recommendationResult))
         elif response.status_code == 200:
-            return self.GetTrackIDs(dict(response.json()))
+            return self.GetItemIDs(dict(response.json()))
         else:
             return response.json()

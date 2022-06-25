@@ -73,7 +73,9 @@ class AuthCode(Auth):
     # https://developer.spotify.com/documentation/general/guides/authorization/scopes/
     scope = [
         "user-read-email",
-        "playlist-read-collaborative"
+        "playlist-read-collaborative",
+        "playlist-modify-public",
+        "playlist-modify-private"
     ]
     
     def __init_subclass__(cls):
