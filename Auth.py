@@ -20,6 +20,10 @@ class Auth(ABC):
     @abstractmethod
     def Authorize(self):
         pass
+    
+    @abstractmethod
+    def RefreshToken(self):
+        pass
 
 @dataclass
 class AuthClientCredentials(Auth):
@@ -41,6 +45,21 @@ class AuthClientCredentials(Auth):
         # Grants data to accessToken, tokenType, expiresIn
         responseResult = responseAuth.json()
         token = responseResult
+    
+    def RefreshToken(cls):
+        responseAuth = requests.post(
+            url=cls.tokenURL, # Where we wanna authorize
+            headers={
+                'Authorization': f"Basic {base64.b64encode((cls.clientID+':'+cls.clientSecret).encode()).decode()}"
+            }, # Header parameters
+            data={
+                'grant_type': 'refresh_token',
+                'refresh_token': cls.token['refresh_token']
+            }, # Body parameters
+            json=True
+            )
+        responseResult = responseAuth.json()
+        cls.token = responseResult
 
 @dataclass
 class AuthCode(Auth):
@@ -86,3 +105,18 @@ class AuthCode(Auth):
         else:
             cls.token = json.loads(tokenFromKeyring.password)
             # keyring.delete_password(service_name="spotify-authcode", username="Oyasumi")
+            
+    def RefreshToken(cls):
+        responseAuth = requests.post(
+            url=cls.tokenURL,
+            headers={
+                'Authorization': f"Basic {base64.b64encode((cls.clientID+':'+cls.clientSecret).encode()).decode()}"
+            }, # Header parameters
+            data={
+                'grant_type': 'refresh_token',
+                'refresh_token': cls.token['refresh_token']
+            }, # Body parameters
+            json=True
+            )
+        responseResult = responseAuth.json()
+        cls.token = responseResult
