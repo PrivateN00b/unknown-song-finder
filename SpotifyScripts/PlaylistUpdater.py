@@ -87,8 +87,6 @@ class PlayListUpdater:
             
         return result           
     
-    # TODO: For some reason when the playlist doesn't yet exist and only will be created on-the-run the songs won't be there first.
-    # (Just an empty playlist, but the songs will be added on an existing one)
     def AddToPlaylist(self, playlistID: str, tracks: list):
         """Add tracks to playlist
         

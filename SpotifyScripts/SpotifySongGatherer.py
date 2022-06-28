@@ -54,6 +54,14 @@ class SpotifySongGatherer:
         return response.json()
     
     def GetTracksAudioFeatures(self, ids):
+        """Get tracks's audio features, like danceability and other infos. Useful for training AI.
+        Only supports getting 1 id now.
+
+        Args:
+            ids (string): Supposed to contain more than 1 id, but now its only implemented to work with only 1 id.
+
+        Returns: Response in JSON format.
+        """
         queryUrl = f"?ids={ids}"
         response = requests.get(
             url=f"https://api.spotify.com/v1/audio-features{queryUrl}",
@@ -64,6 +72,10 @@ class SpotifySongGatherer:
         
     # Gets all of the avalaible genres
     def GetAvalaibleGenreSeeds(self):
+        """Gets all the genre seeds currently residing in the Spotify DB.
+
+        Returns: Response in JSON format.
+        """
         response = requests.get(
             url='https://api.spotify.com/v1/recommendations/available-genre-seeds',
             headers={
@@ -76,6 +88,12 @@ class SpotifySongGatherer:
 
     # Adds precious datas to a csv file
     def AddToCSV(self, tracksToAdd, tracksAudioFeatures):
+        """Adds tracks and it's audio features to a CSV file
+
+        Args:
+            tracksToAdd (JSON): Tracks and unnecessary infos in JSON format
+            tracksAudioFeatures (JSON): Tracks's features in JSON format
+        """
         # Checks if the tracks.csv file exists
         if not exists('tracks.csv'):
             with open('tracks.csv', 'w', newline='', encoding='utf-8') as file:
@@ -103,9 +121,12 @@ class SpotifySongGatherer:
                     writer.writerow([currentTrack])
                 uniqueTracks.clear()               
                 
-    # Starts calling SearchTracks for all years between 1980-(insert current year here) and specific genres to find a bunch of songs
-    # genresToAvoid: Genres that are excluded from SearchTracks API
     def BeginTrackSearchAndUploading(self, genresToAvoid):
+        """Starts calling SearchTracks for all years between 1980-(insert current year here) and specific genres to find a bunch of songs
+
+        Args:
+            genresToAvoid (JSON): Genres that are excluded from SearchTracks API in JSON format
+        """
         # Removing genres that aren't acceptable
         goodGenres = set(self.GetAvalaibleGenreSeeds()['genres']) - set(genresToAvoid)
         # Iterating through a bunch of years and genres and offsetting
