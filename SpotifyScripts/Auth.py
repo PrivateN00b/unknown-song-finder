@@ -10,6 +10,7 @@ import keyring
 
 @dataclass
 class Auth(ABC):
+    """A base class for creating authorization clases."""
     
     # Some global variables/attributes
     clientID: str = 'cbef85907193457e978b1fe28885af1d' # Necessary for auth
@@ -19,15 +20,21 @@ class Auth(ABC):
     
     @abstractmethod
     def Authorize(self):
+        """Makes the authorization.
+        
+        Types: Client Credentials, Code Flow
+        """
         pass
     
     @abstractmethod
     def RefreshToken(self):
+        """Refreshes token duuh."""
         pass
 
 @dataclass
 class AuthClientCredentials(Auth):
-    
+    """Spotify authorization with Client Credentials.
+        https://developer.spotify.com/documentation/general/guides/authorization/client-credentials/"""
     def __init_subclass__(cls):
         return super().__init_subclass__()
     
@@ -43,8 +50,7 @@ class AuthClientCredentials(Auth):
             json=True
             )
         # Grants data to accessToken, tokenType, expiresIn
-        responseResult = responseAuth.json()
-        token = responseResult
+        cls.token = responseAuth.json()
     
     def RefreshToken(cls):
         responseAuth = requests.post(
@@ -58,14 +64,12 @@ class AuthClientCredentials(Auth):
             }, # Body parameters
             json=True
             )
-        responseResult = responseAuth.json()
-        cls.token = responseResult
+        cls.token = responseAuth.json()
 
 @dataclass
 class AuthCode(Auth):
     """Spotify authorization with Code Flow.
-       https://developer.spotify.com/documentation/general/guides/authorization/code-flow/
-    """
+       https://developer.spotify.com/documentation/general/guides/authorization/code-flow/"""
     
     redirectURI: str = "https://noobkozlegeny.github.io"
     authorizationBaseURL: str = "https://accounts.spotify.com/authorize"
@@ -120,5 +124,4 @@ class AuthCode(Auth):
             }, # Body parameters
             json=True
             )
-        responseResult = responseAuth.json()
-        cls.token = responseResult
+        cls.token = responseAuth.json()
