@@ -88,6 +88,7 @@ def PlaylistUpdate(tracks: list):
     #Creating Playlist and checking if it already exists
     if playlistID is None:
         pu.CreatePlaylist(name, description)
+        playlistID = pu.DoesPlayListExists(name)
     else:
         print("Playlist already exists!")
     
