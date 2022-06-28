@@ -2,7 +2,7 @@ from inspect import currentframe
 from attr import dataclass
 import requests
 from SpotifyScripts.Auth import Auth
-from Others.Exceptions.CustomExceptions import NotFoundError
+from Others.Exceptions.CustomExceptions import *
 
 class SpotifyRecommendation:
     
@@ -97,7 +97,7 @@ class SpotifyRecommendation:
                                     There is/are {len(item.split(',')) - foundItemsCount} {type}(s) that couldn't be found.
                                     """)                 
         else:
-            return "You have decided to leave this blank."
+            return "You have decided to leave this blank.", None
         
     # Spotify's recommendation API
     def GetRecommendations(self, seedArtists: str = None, seedGenres: str = None, seedTracks: str = None,
@@ -109,6 +109,7 @@ class SpotifyRecommendation:
                            targetPopularity: int = None, targetSpeechiness: float = None,
                            targetTempo: int = None, targetTimeSignature: int = None,
                            targetValence: float = None):
+        """Calls the Recommendation API to get tracks and returns those."""
         
         response = requests.get(
             url='https://api.spotify.com/v1/recommendations',
@@ -139,6 +140,13 @@ class SpotifyRecommendation:
             
             return self.GetItemIDs(dict(recommendationResult))
         elif response.status_code == 200:
-            return self.GetItemIDs(dict(response.json()))
+            recommendedTracksJSON = dict(response.json())
+            
+            # Checks if the Recommendation API didn't give tracks. If yes then it will raise an exception.
+            if len(recommendedTracksJSON['tracks']) == 0:
+                raise EmptyResponseOn200StatusError("\nSomehow the Recommendation algorithm didn't give tracks for you." + 
+                                                    "\nTry adding more seed data to please the AI lord's tummy.")
+            else:
+                return self.GetItemIDs(recommendedTracksJSON)
         else:
             return response.json()
