@@ -20,6 +20,7 @@ class PlayListUpdater:
     PlaylistsURL: str = "*Insert Graphic design is my passion meme*"
     
     def GetCurrentUserID(self):
+        """Returns the current user's ID response"""
         response = requests.get(
             url='https://api.spotify.com/v1/me',
             headers={
@@ -36,6 +37,7 @@ class PlayListUpdater:
         self.PlaylistsURL = f"https://api.spotify.com/v1/users/{self.userID}/playlists"
     
     def GetExistingPlaylists(self):
+        """Returns the current user's playlists response"""
         response = requests.get(self.PlaylistsURL,
             headers={
                 'Authorization': f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
@@ -44,6 +46,7 @@ class PlayListUpdater:
         return response.json()
 
     def CreatePlaylist(self, name: str, desc: str):
+        """Creates a playlist for the current user"""
         response = requests.post(self.PlaylistsURL,
             headers={
                 'Authorization': f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
@@ -59,7 +62,16 @@ class PlayListUpdater:
         return jsonResponse
 
     # Doesn't return bool to also get the playlistID
-    def DoesPlayListExists(self, name: str, description: str):
+    def DoesPlayListExists(self, name: str):
+        """Checks if the current user already has an X named playlist.
+
+        Args:
+            name (str): The playlist name we want to check if it exists
+
+        Returns:
+            if playlist exists: The playlist's ID
+            if playlist doesn't: None
+        """
         responseJson = self.GetExistingPlaylists()
         exists = False
         result = None
@@ -77,7 +89,15 @@ class PlayListUpdater:
     
     # TODO: For some reason when the playlist doesn't yet exist and only will be created on-the-run the songs won't be there first.
     # (Just an empty playlist, but the songs will be added on an existing one)
-    def AddToPlaylist(self, playlistID, tracks: list):       
+    def AddToPlaylist(self, playlistID: str, tracks: list):
+        """Add tracks to playlist
+        
+        Args:
+            playlistID (str): The playlist's ID
+            tracks (list): List containing ID's of tracks
+
+        Returns: Response""" 
+             
         #Adding the songs  
         postURL = f"https://api.spotify.com/v1/playlists/{playlistID}/tracks?uris="
         postURL += f"spotify%3Atrack%3A{tracks[0]}"
