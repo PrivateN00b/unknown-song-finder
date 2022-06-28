@@ -1,16 +1,25 @@
-import importlib
-from Others.Exceptions.CustomExceptions import NotFoundError
+from Others.Exceptions.CustomExceptions import *
 from SpotifyScripts.Auth import AuthClientCredentials, AuthCode
 from SpotifyScripts.PlaylistUpdater import PlayListUpdater
 from SpotifyScripts.SpotifyRecommendation import SpotifyRecommendation
 from SpotifyScripts.SpotifySongGatherer import SpotifySongGatherer
-import keyring
 
 inputArtists: str = ""
 inputGenres: str = ""
 inputTracks: str = ""
 
 def AskForItemAndInspect(ssg: SpotifySongGatherer, sr: SpotifyRecommendation, itemName: str):
+    """Checks if the requested name exists in the Spotify database.
+
+    Args:
+        ssg (SpotifySongGatherer): SpotifySongGatherer class
+        sr (SpotifyRecommendation): SpotifyRecommendation class
+        itemName (str): The name to check it's existence
+
+    Returns:
+        if itemName exists: The corresponding ID or genre name.
+        if itemName doesn't: Void
+    """
     try:
         seedItems = input(f"Add X {itemName}(s)'s names if you wish: ")
         if itemName == 'genre':
@@ -25,11 +34,16 @@ def AskForItemAndInspect(ssg: SpotifySongGatherer, sr: SpotifyRecommendation, it
         AskForItemAndInspect(ssg, sr, itemName)
 
 def RecommendationAPI(ssg: SpotifySongGatherer, sr: SpotifyRecommendation):
-    """This function deals with calling the official Spotify Recommandation API"""
+    """This function deals with calling the official Spotify Recommandation API.
     
-    
+    Args:
+        ssg (SpotifySongGatherer): SpotifySongGatherer class
+        sr (SpotifyRecommendation): SpotifyRecommendation class
+
+    Returns: A list with recommended trackID's by the algorithm.
+    """ 
+    # Asks for artist/genre/track names and checks if they exist or not
     print("""Add maximum of 5 data in any combination of artists, genres or tracks:
-            IMPORTANT: Insert ID's and not the name of the artists and tracks.
             To add more than 1 information, separate them by using the (,) separator.
             If you want to avoid filling artists, genres or tracks then leave that part(s) blank by pressing ENTER.
           """)
@@ -37,12 +51,19 @@ def RecommendationAPI(ssg: SpotifySongGatherer, sr: SpotifyRecommendation):
     inputArtists = AskForItemAndInspect(ssg, sr, 'artist')
     inputGenres = AskForItemAndInspect(ssg, sr, 'genre')
     inputTracks = AskForItemAndInspect(ssg, sr, 'track')
-        
+    
+    # Gets the recommended trackID's which the API suggests
     recommendationResult = sr.GetRecommendations(seedArtists=inputArtists, seedGenres=inputGenres,
                                                  seedTracks=inputTracks, limit=30)
     return list(recommendationResult)
 
 def PlaylistUpdate(pu: PlayListUpdater, tracks: list):
+    """Creates a playlist or updates it with tracks.
+
+    Args:
+        pu (PlayListUpdater): PlayListUpdater class
+        tracks (list): A list containing trackID's
+    """
     name = "Recommendation API Tracks"
     description = "Tracks based on "
     
@@ -66,12 +87,15 @@ def PlaylistUpdate(pu: PlayListUpdater, tracks: list):
     print("Successful!")
 
 def Main():
+    # Defining and initializing classes
     ssg = SpotifySongGatherer(AuthClientCredentials())
     sr = SpotifyRecommendation(AuthCode())
     pu = PlayListUpdater(AuthCode())
     
+    # Gets trackID's
     recommendedTracks = RecommendationAPI(ssg, sr)
     
+    # Updates playlist with the previously gotten trackID's
     PlaylistUpdate(pu, recommendedTracks)
     
     # ssg.BeginTrackSearchAndUploading(genresToAvoid=[
