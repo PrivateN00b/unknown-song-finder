@@ -3,6 +3,7 @@ from SpotifyScripts.Auth import AuthClientCredentials, AuthCode
 from SpotifyScripts.PlaylistUpdater import PlayListUpdater
 from SpotifyScripts.SpotifyRecommendation import SpotifyRecommendation
 from SpotifyScripts.SpotifySongGatherer import SpotifySongGatherer
+from pubsub import pub
 
 # Defining and initializing global classes/attributes
 ssg = SpotifySongGatherer(AuthClientCredentials())
@@ -12,6 +13,26 @@ pu = PlayListUpdater(AuthCode())
 inputArtists: str = ""
 inputGenres: str = ""
 inputTracks: str = ""
+
+def SelectCorrectTrackID(arg: list(dict()), item: str, type: str, offset: int):
+    """Makes the user to choose a track out of the found ones with the same names.
+    
+    Returns: Selected track's ID
+    """
+    print("The algorithm have found numerous tracks with the same name. Type -1 if it didn't list the correct one.")
+    
+    for currentTrack in arg:
+        print(f"Number: {currentTrack['idx']}, Name: {currentTrack['name']}, Artist(s): {currentTrack['artists']}")
+    
+    selectedNum = int(input("Select the correct track by inserting the corresponding number: "))
+    
+    # Checks if the user responded with -1. (If the algorithm included the correct track in the list)
+    if selectedNum != -1:   
+        return arg[selectedNum]['itemID']
+    else:
+        print("Rerunning the algorithm...\n")
+        pub.sendMessage('rerunCorrectTrackSearch', item=item, type=type, offset=(offset+50))
+        
 
 def AskForItemAndInspect(itemName: str):
     """Checks if the requested name exists in the Spotify database.
@@ -110,10 +131,11 @@ def GetRecommendedTrackIDs():
         print(e)
         
         # Asking for seed datas again
-        GetRecommendedTrackIDs()
-        
+        GetRecommendedTrackIDs()      
     
 def Main():
+    
+    pub.subscribe(SelectCorrectTrackID, 'selectCorrectTrack')
     
     # Gets recommended tracks and updates the playlist with it
     recommendedTracks = GetRecommendedTrackIDs()  
