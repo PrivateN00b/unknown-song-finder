@@ -27,14 +27,15 @@ def SelectCorrectTrackID(arg: list(dict()), item: str, type: str, offset: int):
     selectedNum = int(input("Select the correct track by inserting the corresponding number: "))
     
     # Checks if the user responded with -1. (If the algorithm included the correct track in the list)
-    if selectedNum != -1:   
+    if selectedNum != -1:
+        print("-"*20+"\n")   
         return arg[selectedNum]['itemID']
     else:
         print("Rerunning the algorithm...\n")
         pub.sendMessage('rerunCorrectTrackSearch', item=item, type=type, offset=(offset+50))
         
 
-def AskForItemAndInspect(itemName: str):
+def AskForItemAndInspect(itemName: str) -> list:
     """Checks if the requested name exists in the Spotify database.
 
     Args:
@@ -54,9 +55,13 @@ def AskForItemAndInspect(itemName: str):
             print(sr.DoesGenreExists(genre=seedItems))
             return seedItems
         else:
-            output, itemID = sr.DoesItemExists(item=seedItems, type=itemName)
-            print(output)
-            return itemID
+            allItemIDs = list()
+            for currentItem in seedItems.split(','):
+                output, itemID = sr.DoesItemExists(item=currentItem, type=itemName)
+                print(output)
+                allItemIDs.append(itemID)
+                
+            return allItemIDs
     except NotFoundError as e:
         print(e)
         AskForItemAndInspect(itemName)

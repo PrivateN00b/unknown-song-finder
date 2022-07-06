@@ -87,51 +87,50 @@ class SpotifyRecommendation:
             foundItemsOutput = ""
             ids: str = ""
             
-            for currentItem in item.split(','):
-                # Creating query URL
-                queryUrl = f"{type}%3A{currentItem.replace(' ', '%20')}"
-                # Initiaiting GET request
-                response = requests.get(
-                            url=f"https://api.spotify.com/v1/search?q={queryUrl}&type={type}&limit=50&offset={offset}",
-                            headers={
-                            "Authorization": f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
-                            })    
+            # Creating query URL
+            queryUrl = f"{type}%3A{item.replace(' ', '%20')}"
+            # Initiaiting GET request
+            response = requests.get(
+                        url=f"https://api.spotify.com/v1/search?q={queryUrl}&type={type}&limit=50&offset={offset}",
+                        headers={
+                        "Authorization": f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
+                        })    
                     
-                # Checks if the token has expired (401), if not (200) then the tracks will be returned   
-                if response.status_code == 401:
-                    self.auth.RefreshToken()         
-                    return self.DoesItemExists(item, type, offset=offset)         
-                elif response.status_code == 200:
-                    responseItems = response.json()[f'{type}s']['items']
+            # Checks if the token has expired (401), if not (200) then the tracks will be returned   
+            if response.status_code == 401:
+                self.auth.RefreshToken()         
+                return self.DoesItemExists(item, type, offset=offset)         
+            elif response.status_code == 200:
+                responseItems = response.json()[f'{type}s']['items']
+                
+                # Filters out those items which doesn't 100% equals with the item name
+                self.FilterItems(responseItems, item)
                     
-                    # Filters out those items which doesn't 100% equals with the item name
-                    self.FilterItems(responseItems, currentItem)
-                    
-                    # Checks if the response has found atleast 1 item
-                    if len(responseItems) >= 1:
-                        foundItemsCount += 1
-                        foundItemsOutput += f"{currentItem} {type} have been successfully found.\n"
-                        # ids += f"{responseItems[0]['id']},"
+                # Checks if the response has found atleast 1 item
+                if len(responseItems) >= 1:
+                    foundItemsCount += 1
+                    foundItemsOutput += f"{item} {type} have been successfully found.\n"
+                    # ids += f"{responseItems[0]['id']},"
                         
-                        # Creates a list with dictionaries/JSON in it which contains all
-                        # the necessary infos about the tracks with same name
-                        itemsWithSameName = list(dict())
-                        for i in range(len(responseItems)):
+                    # Creates a list with dictionaries/JSON in it which contains all
+                    # the necessary infos about the tracks with same name
+                    itemsWithSameName = list(dict())
+                    for i in range(len(responseItems)):
                             
-                            currentItemWithSameNameArtists = list()
-                            for currentArtist in responseItems[i]['artists']:
-                                currentItemWithSameNameArtists.append(currentArtist['name'])
+                        currentItemWithSameNameArtists = list()
+                        for currentArtist in responseItems[i]['artists']:
+                            currentItemWithSameNameArtists.append(currentArtist['name'])
                             
-                            itemsWithSameName.append({ 
-                                                        "idx" : i,
-                                                        "name" : responseItems[i]["name"],
-                                                        "itemID" : f"{responseItems[i]['id']}",
-                                                        "artists" : currentItemWithSameNameArtists
-                                                    })
+                        itemsWithSameName.append({ 
+                                                    "idx" : i,
+                                                    "name" : responseItems[i]["name"],
+                                                    "itemID" : f"{responseItems[i]['id']}",
+                                                    "artists" : currentItemWithSameNameArtists
+                                                })
                         
-                    # Invokes/Informs/Sends data to the subscriber method(s)
-                    # and sends back the infos about the tracks with same names
-                    pub.sendMessage('selectCorrectTrack', arg=itemsWithSameName, item=item, type=type, offset=offset)                         
+                # Invokes/Informs/Sends data to the subscriber method(s)
+                # and sends back the infos about the tracks with same names
+                pub.sendMessage('selectCorrectTrack', arg=itemsWithSameName, item=item, type=type, offset=offset)                     
             
             # Checking if we have found all the items or not
             if foundItemsCount == len(item.split(',')):
