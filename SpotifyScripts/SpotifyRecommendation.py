@@ -1,3 +1,4 @@
+import csv
 from inspect import currentframe
 from attr import dataclass
 import requests
@@ -102,7 +103,7 @@ class SpotifyRecommendation:
                 return self.DoesItemExists(item, type, offset=offset)         
             elif response.status_code == 200:
                 responseItems = response.json()[f'{type}s']['items']
-                
+
                 # Filters out those items which doesn't 100% equals with the item name
                 self.FilterItems(responseItems, item)
                     
@@ -110,7 +111,7 @@ class SpotifyRecommendation:
                 if len(responseItems) >= 1:
                     foundItemsCount += 1
                     foundItemsOutput += f"{item} {type} have been successfully found.\n"
-                    # ids += f"{responseItems[0]['id']},"
+                    ids += f"{responseItems[0]['id']},"
                         
                     # Creates a list with dictionaries/JSON in it which contains all
                     # the necessary infos about the tracks with same name

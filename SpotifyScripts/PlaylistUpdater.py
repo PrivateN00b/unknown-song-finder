@@ -42,8 +42,8 @@ class PlayListUpdater:
             headers={
                 'Authorization': f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
                 })
-        
-        return response.json()
+
+        return response
 
     def CreatePlaylist(self, name: str, desc: str):
         """Creates a playlist for the current user"""
@@ -57,9 +57,8 @@ class PlayListUpdater:
                 "description": desc
             }
         )
-        jsonResponse = response.json()
         
-        return jsonResponse
+        return response
 
     # Doesn't return bool to also get the playlistID
     def DoesPlayListExists(self, name: str):
@@ -72,7 +71,7 @@ class PlayListUpdater:
             if playlist exists: The playlist's ID
             if playlist doesn't: None
         """
-        responseJson = self.GetExistingPlaylists()
+        responseJson = self.GetExistingPlaylists().json()
         exists = False
         result = None
         i = 0
@@ -114,4 +113,4 @@ class PlayListUpdater:
             }
         )
         
-        return response.json()  
+        return response 

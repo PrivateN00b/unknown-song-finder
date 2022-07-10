@@ -53,18 +53,7 @@ class AuthClientCredentials(Auth):
         cls.token = responseAuth.json()
     
     def RefreshToken(cls):
-        responseAuth = requests.post(
-            url=cls.tokenURL, # Where we wanna authorize
-            headers={
-                'Authorization': f"Basic {base64.b64encode((cls.clientID+':'+cls.clientSecret).encode()).decode()}"
-            }, # Header parameters
-            data={
-                'grant_type': 'refresh_token',
-                'refresh_token': cls.token['refresh_token']
-            }, # Body parameters
-            json=True
-            )
-        cls.token = responseAuth.json()
+        cls.Authorize()
 
 @dataclass
 class AuthCode(Auth):
