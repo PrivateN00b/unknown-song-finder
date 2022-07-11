@@ -73,3 +73,13 @@ class TestSpotifyRecommendation():
         # ASSERT
         with pytest.raises(NotFoundError):
             output, itemID = sr.DoesItemExists(item='BringBackFilthyFrankIMissYou',type='track')
+            
+    def test_does_item_exists_input_is_blank(self):
+        # ARRANGE
+        sr = SpotifyRecommendation(AuthCode())
+        # ACT
+        output, itemID = sr.DoesItemExists(item='',type='track')
+        expected = "You have decided to leave this blank."
+        # ASSERT
+        assert expected == output
+            
