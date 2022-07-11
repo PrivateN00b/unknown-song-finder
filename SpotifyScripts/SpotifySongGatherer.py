@@ -51,7 +51,7 @@ class SpotifySongGatherer:
                     headers={
                 'Authorization': f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
                 })    
-        return response.json()
+        return response
     
     def GetTracksAudioFeatures(self, ids):
         """Get tracks's audio features, like danceability and other infos. Useful for training AI.
@@ -68,7 +68,7 @@ class SpotifySongGatherer:
             headers={
                 'Authorization': f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
                 })
-        return response.json()
+        return response
         
     # Gets all of the avalaible genres
     def GetAvalaibleGenreSeeds(self):
@@ -135,14 +135,14 @@ class SpotifySongGatherer:
                 offset = 0
                 while offset < 5000: 
                     # Tracks and some data about them
-                    tracksToAdd = self.SearchTracks(q=f"year:{currentYear}%20genre:{currentGenre}", tp=['track'], market='US', offset=offset, limit=50)
+                    tracksToAdd = self.SearchTracks(q=f"year:{currentYear}%20genre:{currentGenre}", tp=['track'], market='US', offset=offset, limit=50).json()
                     offset += int(tracksToAdd['tracks']['limit'])
                     # Tracks's audio features which are probably used by recommendation algorithms
                     trackIDs = str()
                     for currentTrack in tracksToAdd['tracks']['items']:
                         trackIDs += f"{currentTrack['id']}%2C"
                     trackIDs = trackIDs[:-3]
-                    tracksAudioFeatures = self.GetTracksAudioFeatures(trackIDs)
+                    tracksAudioFeatures = self.GetTracksAudioFeatures(trackIDs).json()
                     # tracksAudioFeatures = GetTracksAudioFeatures(tracksToAdd['tracks']['items'])
                     self.AddToCSV(tracksToAdd, tracksAudioFeatures)
                     sleep(1)
