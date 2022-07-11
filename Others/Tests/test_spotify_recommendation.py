@@ -51,3 +51,6 @@ class TestSpotifyRecommendation():
         expected = "You have decided to leave this blank."
         # ASSERT
         assert result == expected 
+    
+    def test_does_item_exists(self):
+        pass

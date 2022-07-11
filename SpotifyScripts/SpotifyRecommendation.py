@@ -59,23 +59,12 @@ class SpotifyRecommendation:
                 self.auth.RefreshToken()         
                 return self.DoesGenreExists(genre)         
             elif response.status_code == 200:
-                foundGenresCount = 0
-                foundGenresOutput = ""
                 
-                # Checking all genres each by each
-                for currentGenre in genre.split(','):
-                    if currentGenre in list(response.json()['genres']):
-                        foundGenresOutput += f"{currentGenre} have been successfully found.\n"
-                        foundGenresCount += 1
-                
-                # Checking if we have found all the items or not
-                if foundGenresCount == len(genre.split(',')):
-                    return foundGenresOutput
+                # Checking if genre exists
+                if genre in list(response.json()['genres']):
+                    return f"{genre} have been successfully found.\n"   
                 else:
-                    raise NotFoundError(f"""Unable to find {genre}(s).
-                                Approved ones: {foundGenresOutput}
-                                There is/are {len(genre.split(',')) - foundGenresCount} genre(s) that couldn't be found.
-                                """)    
+                    raise NotFoundError(f"""Unable to find {genre}.""")    
         else:
             return "You have decided to leave this blank."
     
