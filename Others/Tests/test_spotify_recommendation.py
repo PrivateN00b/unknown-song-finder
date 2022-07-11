@@ -52,5 +52,24 @@ class TestSpotifyRecommendation():
         # ASSERT
         assert result == expected 
     
-    def test_does_item_exists(self):
-        pass
+    def test_does_item_exists_found_track(self):
+        # ARRANGE
+        sr = SpotifyRecommendation(AuthCode())
+        # ACT
+        # Emulates the pubsub messaging part where the user selects the correct track
+        sr.selectedTrackID = '6BOOnwbQFco9AV0rKXZ8VV'
+        
+        output, itemID = sr.DoesItemExists(item='Cello Suite No. 1 in G Major, BWV 1007: I. Prélude',type='track')
+        # ASSERT
+        assert f"Cello Suite No. 1 in G Major, BWV 1007: I. Prélude track have been successfully found.\n" == output
+        
+    def test_does_item_exists_didnt_found_track(self):
+        # ARRANGE
+        sr = SpotifyRecommendation(AuthCode())
+        # ACT
+        # Emulates the pubsub messaging part where the user selects the correct track (It should be left as None)
+        sr.selectedTrackID = None
+        
+        # ASSERT
+        with pytest.raises(NotFoundError):
+            output, itemID = sr.DoesItemExists(item='BringBackFilthyFrankIMissYou',type='track')

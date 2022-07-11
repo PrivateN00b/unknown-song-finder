@@ -79,9 +79,7 @@ class SpotifyRecommendation:
         """Returns NotFoundError/string depending on the item seed existence."""
         # Checking if the item string is blank
         if item.strip():
-            
-            ids: str = ""
-            
+
             # Creating query URL
             queryUrl = f"{type}%3A{item.replace(' ', '%20')}"
             # Initiaiting GET request
@@ -103,8 +101,6 @@ class SpotifyRecommendation:
                     
                 # Checks if the response has found atleast 1 item
                 if len(responseItems) >= 1:
-
-                    ids += f"{responseItems[0]['id']},"
                         
                     # Creates a list with dictionaries/JSON in it which contains all
                     # the necessary infos about the tracks with same name
@@ -122,13 +118,11 @@ class SpotifyRecommendation:
                                                     "artists" : currentItemWithSameNameArtists
                                                 })
                 
-                # SelectCorrectTrackID will send a message which will go here
-                pub.subscribe(self.GetSelectedTrackID, 'getSelectedTrackID')
+                    # SelectCorrectTrackID will send a message which will go here
+                    pub.subscribe(self.GetSelectedTrackID, 'getSelectedTrackID')
                         
-                # Invokes/Informs/Sends data to the subscriber method (SelectCorrectTrackID method in Main.py)
-                pub.sendMessage('selectCorrectTrack', arg=itemsWithSameName, item=item, type=type, offset=offset)
-                
-                 
+                    # Invokes/Informs/Sends data to the subscriber method (SelectCorrectTrackID method in Main.py)
+                    pub.sendMessage('selectCorrectTrack', arg=itemsWithSameName, item=item, type=type, offset=offset)
 
                 # Checking if we have found the 
                 if self.selectedTrackID is not None:
