@@ -20,3 +20,19 @@ class TestSpotifySongGatherer():
         result = ssg.GetTracksAudioFeatures(ids=ids)
         # ASSERT
         assert result.status_code == 200
+        
+    def test_get_avalaible_genre_seeds_success(self):
+        # ARRANGE
+        ssg = SpotifySongGatherer(AuthClientCredentials())
+        # ACT
+        result = ssg.GetAvalaibleGenreSeeds()
+        # ASSERT
+        assert result.status_code == 200
+        
+    def AddToCSV(self, tracksToAdd, tracksAudioFeatures):
+        # ARRANGE
+        ssg = SpotifySongGatherer(AuthClientCredentials())
+        # ACT
+        result = ssg.AddToCSV(tracksToAdd, tracksAudioFeatures)
+        # ASSERT
+        assert result == 69

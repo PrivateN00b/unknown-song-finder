@@ -82,7 +82,7 @@ class SpotifySongGatherer:
                 'Authorization': f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
                 }
         )
-        return response.json()
+        return response
         
 
 
@@ -128,7 +128,7 @@ class SpotifySongGatherer:
             genresToAvoid (JSON): Genres that are excluded from SearchTracks API in JSON format
         """
         # Removing genres that aren't acceptable
-        goodGenres = set(self.GetAvalaibleGenreSeeds()['genres']) - set(genresToAvoid)
+        goodGenres = set(self.GetAvalaibleGenreSeeds().json()['genres']) - set(genresToAvoid)
         # Iterating through a bunch of years and genres and offsetting
         for currentYear in range(1980, date.today().year):
             for currentGenre in goodGenres:
