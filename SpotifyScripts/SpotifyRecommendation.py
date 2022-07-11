@@ -1,3 +1,4 @@
+from copy import deepcopy
 import csv
 from inspect import currentframe
 from attr import dataclass
@@ -10,6 +11,12 @@ import string
 class SpotifyRecommendation:
     
     auth: Auth = None
+    
+    # Dirty code but this is needed to somehow store when the user selects the correct track and the ID will be sent by the SelectCorrectTrackID in Main.py
+    selectedTrackID: str = None
+    
+    def GetSelectedTrackID(self, selectedID: str):
+        self.selectedTrackID = selectedID
     
     def RerunCorrectTrackSearch(self, item, type, offset):
         self.DoesItemExists(item, type, offset)
@@ -64,7 +71,7 @@ class SpotifyRecommendation:
                 if genre in list(response.json()['genres']):
                     return f"{genre} have been successfully found.\n"   
                 else:
-                    raise NotFoundError(f"""Unable to find {genre}.""")    
+                    raise NotFoundError(f"Unable to find {genre}.")    
         else:
             return "You have decided to leave this blank."
     
@@ -73,8 +80,6 @@ class SpotifyRecommendation:
         # Checking if the item string is blank
         if item.strip():
             
-            foundItemsCount = 0
-            foundItemsOutput = ""
             ids: str = ""
             
             # Creating query URL
@@ -98,8 +103,7 @@ class SpotifyRecommendation:
                     
                 # Checks if the response has found atleast 1 item
                 if len(responseItems) >= 1:
-                    foundItemsCount += 1
-                    foundItemsOutput += f"{item} {type} have been successfully found.\n"
+
                     ids += f"{responseItems[0]['id']},"
                         
                     # Creates a list with dictionaries/JSON in it which contains all
@@ -117,19 +121,25 @@ class SpotifyRecommendation:
                                                     "itemID" : f"{responseItems[i]['id']}",
                                                     "artists" : currentItemWithSameNameArtists
                                                 })
+                
+                # SelectCorrectTrackID will send a message which will go here
+                pub.subscribe(self.GetSelectedTrackID, 'getSelectedTrackID')
                         
-                # Invokes/Informs/Sends data to the subscriber method(s)
-                # and sends back the infos about the tracks with same names
-                pub.sendMessage('selectCorrectTrack', arg=itemsWithSameName, item=item, type=type, offset=offset)                     
-            
-            # Checking if we have found all the items or not
-            if foundItemsCount == len(item.split(',')):
-                return foundItemsOutput, ids[0:len(ids) - 1]
-            else:
-                raise NotFoundError(f"""Unable to find {item} {type}(s).
-                                    Approved ones: {foundItemsOutput}
-                                    There is/are {len(item.split(',')) - foundItemsCount} {type}(s) that couldn't be found.
-                                    """)                 
+                # Invokes/Informs/Sends data to the subscriber method (SelectCorrectTrackID method in Main.py)
+                pub.sendMessage('selectCorrectTrack', arg=itemsWithSameName, item=item, type=type, offset=offset)
+                
+                 
+
+                # Checking if we have found the 
+                if self.selectedTrackID is not None:
+                    
+                    # Making deepcopy of selectedTrackID bc it needs to be erased
+                    trackIDToReturn = deepcopy(self.selectedTrackID)
+                    self.selectedTrackID = None
+                    
+                    return f"{item} {type} have been successfully found.\n", trackIDToReturn
+                else:
+                    raise NotFoundError(f"Unable to find {item} {type}")                                     
         else:
             return "You have decided to leave this blank.", None
         
