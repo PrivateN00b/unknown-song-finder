@@ -29,10 +29,10 @@ class TestSpotifySongGatherer():
         # ASSERT
         assert result.status_code == 200
         
-    def AddToCSV(self, tracksToAdd, tracksAudioFeatures):
+    def test_add_to_csv(self, tracksToAdd, tracksAudioFeatures):
         # ARRANGE
         ssg = SpotifySongGatherer(AuthClientCredentials())
         # ACT
         result = ssg.AddToCSV(tracksToAdd, tracksAudioFeatures)
         # ASSERT
-        assert result == 69
+        assert 1 == 2
