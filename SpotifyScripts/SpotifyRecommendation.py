@@ -107,6 +107,9 @@ class SpotifyRecommendation:
                     itemsWithSameName = list(dict())
                     for i in range(len(responseItems)):
                          
+                        # similarlyNamedItemInfos list contains extra information about items which are in the response.
+                        # Example: Typing Lady Gaga as an artist will give several results. Lady G, Lady Wei etc.
+                        # That's why we need extra infos to make them easily distinguishable. 
                         similarlyNamedItemInfos = list()
                             
                         if type == 'track':    
