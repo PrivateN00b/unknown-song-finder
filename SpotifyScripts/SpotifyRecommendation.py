@@ -43,11 +43,35 @@ class SpotifyRecommendation:
             items (dict): Dictionary containing items
             filter (str): The string data to be equal with
         """
-        table = str.maketrans(dict.fromkeys(string.punctuation + ' '))
-        
+        xd = 2
         for currentItem in items:
-            if str(currentItem['name']).translate(table) != filter.translate(table):
+            
+            currentItemLength = len(currentItem['name'])
+            
+            if currentItemLength == len(filter):
+                
+                isItEqual: bool = True
+                i = 0
+                
+                while isItEqual == True and i < len(filter):
+                    
+                    currentChar = currentItem['name'][i]
+                    
+                    if currentChar == filter[i]:
+                        i += 1
+                    else:
+                        isItEqual = False
+                        items.remove(currentItem)
+            else:
                 items.remove(currentItem)
+        
+        xd = 1
+        # Old and really generous item filter algorithm
+        # table = str.maketrans(dict.fromkeys(string.punctuation + ' '))
+        
+        # for currentItem in items:
+        #     if str(currentItem['name']).translate(table) != filter.translate(table):
+        #         items.remove(currentItem)
     
     def DoesGenreExists(self, genre: str):
         """Returns NotFoundError/string depending on the genre seed existence."""
