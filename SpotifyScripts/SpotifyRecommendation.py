@@ -106,16 +106,20 @@ class SpotifyRecommendation:
                     # the necessary infos about the tracks with same name
                     itemsWithSameName = list(dict())
                     for i in range(len(responseItems)):
+                         
+                        similarlyNamedItemInfos = list()
                             
-                        currentItemWithSameNameArtists = list()
-                        for currentArtist in responseItems[i]['artists']:
-                            currentItemWithSameNameArtists.append(currentArtist['name'])
+                        if type == 'track':    
+                            for currentItem in responseItems[i]['artists']:
+                                similarlyNamedItemInfos.append(currentItem['name'])
+                        elif type == 'artist':
+                            similarlyNamedItemInfos.append(responseItems[i]['external_urls']['spotify'])
                             
                         itemsWithSameName.append({ 
-                                                    "idx" : i,
+                                                    "idx" : i + 1,
                                                     "name" : responseItems[i]["name"],
                                                     "itemID" : f"{responseItems[i]['id']}",
-                                                    "artists" : currentItemWithSameNameArtists
+                                                    "extra_info" : similarlyNamedItemInfos
                                                 })
                 
                     # SelectCorrectTrackID will send a message which will go here

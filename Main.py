@@ -22,7 +22,7 @@ def SelectCorrectTrackID(arg: list(dict()), item: str, type: str, offset: int):
     print("The algorithm have found numerous tracks with the same name. Type -1 if it didn't list the correct one.")
     
     for currentTrack in arg:
-        print(f"Number: {currentTrack['idx']}, Name: {currentTrack['name']}, Artist(s): {currentTrack['artists']}")
+        print(f"Number: {currentTrack['idx']}, Name: {currentTrack['name']}, Info: {currentTrack['extra_info']}")
     
     selectedNum = int(input("Select the correct track by inserting the corresponding number: "))
     
