@@ -18,7 +18,7 @@ class SpotifyRecommendation:
     def GetSelectedTrackID(self, selectedID: str):
         self.selectedTrackID = selectedID
     
-    def RerunCorrectTrackSearch(self, item, type, offset):
+    def RerunCorrectTrackSearch(self, item: str, type: str, offset: int):
         self.DoesItemExists(item, type, offset)
     
     def __init__(self, auth: Auth):
@@ -90,6 +90,9 @@ class SpotifyRecommendation:
     
     def DoesItemExists(self, item: str, type: str, offset: int = 0):
         """Returns NotFoundError/string depending on the item seed existence."""
+        # This needs to be erased from the start if we have typed more than 1 item
+        self.selectedTrackID = None
+        
         # Checking if the item string is blank
         if item.strip():
 
@@ -137,21 +140,16 @@ class SpotifyRecommendation:
                                                     "itemID" : f"{responseItems[i]['id']}",
                                                     "extra_info" : similarlyNamedItemInfos
                                                 })
-                
+                     
                     # SelectCorrectTrackID will send a message which will go here
-                    pub.subscribe(self.GetSelectedTrackID, 'getSelectedTrackID')
+                    pub.subscribe(self.GetSelectedTrackID, 'getSelectedTrackID') 
                         
                     # Invokes/Informs/Sends data to the subscriber method (SelectCorrectTrackID method in Main.py)
-                    pub.sendMessage('selectCorrectTrack', arg=itemsWithSameName, item=item, type=type, offset=offset)
+                    pub.sendMessage('selectCorrectTrack', arg=itemsWithSameName, item=item, type=type, offset=offset)                  
 
                 # Checking if we have found the 
-                if self.selectedTrackID is not None:
-                    
-                    # Making deepcopy of selectedTrackID bc it needs to be erased
-                    trackIDToReturn = deepcopy(self.selectedTrackID)
-                    self.selectedTrackID = None
-                    
-                    return f"{item} {type} have been successfully found.\n", trackIDToReturn
+                if self.selectedTrackID is not None:                  
+                    return f"{item} {type} have been successfully found.\n", self.selectedTrackID
                 else:
                     raise NotFoundError(f"Unable to find {item} {type}")                                     
         else:

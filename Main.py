@@ -31,8 +31,7 @@ def SelectCorrectTrackID(arg: list(dict()), item: str, type: str, offset: int):
         print("-"*20+"\n")
         
         # Sends back the selected track's ID to DoesItemExists for returning the ID
-        pub.sendMessage('getSelectedTrackID', selectedID=arg[selectedNum - 1]['itemID'])   
-        # return arg[selectedNum]['itemID']
+        pub.sendMessage('getSelectedTrackID', selectedID=arg[selectedNum - 1]['itemID'])
     else:
         print("Rerunning the algorithm...\n")
         pub.sendMessage('rerunCorrectTrackSearch', item=item, type=type, offset=(offset+50))
