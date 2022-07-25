@@ -41,20 +41,19 @@ def AskForItemAndInspect(itemName: str) -> list:
     """Checks if the requested name exists in the Spotify database.
 
     Args:
-        ssg (SpotifySongGatherer): SpotifySongGatherer class
-        sr (SpotifyRecommendation): SpotifyRecommendation class
         itemName (str): The name to check it's existence
 
     Returns:
         if itemName exists: The corresponding ID or genre name.
         if itemName doesn't: Void
     """
-    global ssg, sr
+    global inputArtists, inputGenres, inputTracks, ssg, sr
     
     try:
         seedItems = input(f"Add X {itemName}(s)'s names if you wish: ")
         if itemName == 'genre':
             print(sr.DoesGenreExists(genre=seedItems))
+            inputGenres = seedItems # This is needed for the playlist's description
             return seedItems
         else:
             allItemIDs = list()
@@ -62,6 +61,12 @@ def AskForItemAndInspect(itemName: str) -> list:
                 output, itemID = sr.DoesItemExists(item=currentItem, type=itemName)
                 print(output)
                 allItemIDs.append(itemID)
+             
+            # This is needed for the playlist's description    
+            if itemName == 'artist':
+                inputArtists = seedItems
+            else:
+                inputTracks = seedItems
                 
             return allItemIDs
     except NotFoundError as e:
@@ -70,34 +75,29 @@ def AskForItemAndInspect(itemName: str) -> list:
 
 def RecommendationAPI():
     """This function deals with calling the official Spotify Recommandation API.
-    
-    Args:
-        ssg (SpotifySongGatherer): SpotifySongGatherer class
-        sr (SpotifyRecommendation): SpotifyRecommendation class
 
     Returns: A list with recommended trackID's by the algorithm.
     """ 
-    global inputArtists, inputGenres, inputTracks, ssg, sr
+    global ssg, sr
     
     # Asks for artist/genre/track names and checks if they exist or not
     print("""Add maximum of 5 data in any combination of artists, genres or tracks:
             To add more than 1 information, separate them by using the (,) separator.
             If you want to avoid filling artists, genres or tracks then leave that part(s) blank by pressing ENTER.
           """)
-    inputArtists = AskForItemAndInspect('artist')
+    inputArtistIDs = AskForItemAndInspect('artist')
     inputGenres = AskForItemAndInspect('genre')
-    inputTracks = AskForItemAndInspect('track')
+    inputTrackIDs = AskForItemAndInspect('track')
     
     # Gets the recommended trackID's which the API suggests
-    recommendationResult = sr.GetRecommendations(seedArtists=inputArtists, seedGenres=inputGenres,
-                                                 seedTracks=inputTracks, limit=30)
+    recommendationResult = sr.GetRecommendations(seedArtists=inputArtistIDs, seedGenres=inputGenres,
+                                                 seedTracks=inputTrackIDs, limit=30)
     return list(recommendationResult)
 
 def PlaylistUpdate(tracks: list):
     """Creates a playlist or updates it with tracks.
 
     Args:
-        pu (PlayListUpdater): PlayListUpdater class
         tracks (list): A list containing trackID's
     """
     global inputArtists, inputGenres, inputTracks, pu
@@ -118,7 +118,8 @@ def PlaylistUpdate(tracks: list):
         pu.CreatePlaylist(name, description)
         playlistID = pu.DoesPlayListExists(name)
     else:
-        print("Playlist already exists!")
+        pu.ChangePlaylistDetails(name, description)
+        
     
     #Adding songs
     pu.AddToPlaylist(playlistID, tracks)

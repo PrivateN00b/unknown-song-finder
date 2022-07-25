@@ -113,4 +113,38 @@ class PlayListUpdater:
             }
         )
         
-        return response 
+        return response       
+    
+    def ChangePlaylistDetails(self, name: str, desc: str, playlistID: str = None):
+        """Changes a playlist's details. If a playlistID haven't been added then it fill try to find
+        the playlist's ID which has the same name as in the parameter name.
+
+        Args:
+            name (str): Playlist's name
+            desc (str): Playlist's description
+            playlistID (str, optional): Playlist's ID. If None then it fill try to find
+                the playlist's ID which has the same name as in the parameter name.
+
+        Returns: 
+            If playlist exists: Response
+            If playlist doesn't exists: False
+        """
+        
+        if playlistID is None:
+            playlistID = self.DoesPlayListExists(name)
+        
+        if playlistID is not None:
+            response = requests.put(f"https://api.spotify.com/v1/playlists/{playlistID}",
+                headers={
+                    'Authorization': f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
+                    },
+                json={
+                    "name": name,
+                    "public": True,
+                    "description": desc
+                }
+            )
+        else:
+            return False
+        
+        return response
