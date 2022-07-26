@@ -56,7 +56,7 @@ class SpotifyRecommendation:
         filteredItems: list(dict()) = list(dict())
           
         for currentItem in items:
-            if currentItem['name'] == filter:
+            if currentItem['name'].startswith(filter):
                 filteredItems.append(currentItem)
                 
         items.clear()

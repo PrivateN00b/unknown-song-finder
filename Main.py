@@ -19,7 +19,7 @@ def SelectCorrectTrackID(arg: list(dict()), item: str, type: str, offset: int):
     
     Returns: Selected track's ID
     """
-    print("The algorithm have found numerous tracks with the same name. Type -1 if it didn't list the correct one.")
+    print("The algorithm have found numerous tracks with the same name. Type -1 or ENTER if it didn't list the correct one.")
     
     for currentTrack in arg:
         print(f"Number: {currentTrack['idx']}, Name: {currentTrack['name']}, Info: {currentTrack['extra_info']}")
@@ -27,7 +27,7 @@ def SelectCorrectTrackID(arg: list(dict()), item: str, type: str, offset: int):
     selectedNum = int(input("Select the correct track by inserting the corresponding number: "))
     
     # Checks if the user responded with -1. (If the algorithm included the correct track in the list)
-    if selectedNum != -1:
+    if selectedNum != -1 or '':
         print("-"*20+"\n")
         
         # Sends back the selected track's ID to DoesItemExists for returning the ID
@@ -58,6 +58,7 @@ def AskForItemAndInspect(itemName: str) -> list:
         else:
             allItemIDs = list()
             for currentItem in seedItems.split(','):
+                currentItem = currentItem.strip()
                 output, itemID = sr.DoesItemExists(item=currentItem, type=itemName)
                 print(output)
                 allItemIDs.append(itemID)
