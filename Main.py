@@ -24,7 +24,12 @@ def SelectCorrectTrackID(arg: list(dict()), item: str, type: str, offset: int):
     for currentTrack in arg:
         print(f"Number: {currentTrack['idx']}, Name: {currentTrack['name']}, Info: {currentTrack['extra_info']}")
     
-    selectedNum = int(input("Select the correct track by inserting the corresponding number: "))
+    # This will try to convert the input into -1. If you didn't write -1, for example an ENTER then it will catch it and convert to -1
+    selectedNum = input("Select the correct track by inserting the corresponding number: ")
+    try:
+        selectedNum = int(selectedNum)
+    except ValueError:
+        selectedNum = -1
     
     # Checks if the user responded with -1. (If the algorithm included the correct track in the list)
     if selectedNum != -1 or '':
