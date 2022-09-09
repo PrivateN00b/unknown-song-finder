@@ -56,7 +56,11 @@ class SpotifyRecommendation:
         filteredItems: list(dict()) = list(dict())
           
         for currentItem in items:
-            if currentItem['name'].startswith(filter):
+            # Make the items list and filter string uppercase for ease of use
+            currentItemNameUpper = str.upper(currentItem['name'])
+            filterUpper = str.upper(filter)
+            
+            if currentItemNameUpper.startswith(filterUpper):
                 filteredItems.append(currentItem)
                 
         items.clear()
