@@ -3,7 +3,7 @@ import re
 from typing import List
 from unittest import result
 from urllib import response
-from attr import dataclass
+# from attr import dataclass
 import requests
 import json
 

@@ -1,6 +1,10 @@
+import sys
+sys.path.append('/home/toth-peter/Codes/Others/unknown-song-finder')
+
 import kivymd
 from kivy.lang import Builder
 from kivymd.app import MDApp
+from SpotifyScripts import Main
 KV = '''
 MDScreen:
 
@@ -39,6 +43,7 @@ class MainApp(MDApp):
     
     def get_songs(self):
         print(self.root.ids['kaga'].text)
+        Main.Main()
     
     def on_start(self):
         pass
