@@ -49,9 +49,8 @@ MDScreen:
 
 class MainApp(MDApp):
 
-    api: AppCreatePlaylist
-
     def build(self):
+        self.api: AppCreatePlaylist = AppCreatePlaylist()
         # Theme style
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Orange"
@@ -60,15 +59,14 @@ class MainApp(MDApp):
         return screen
     
     def select_items(self):
-        item_label_text = self.root.ids.itemLabel.text
-        self.api.AskForItemAndInspectDecorator(item_label_text)
-        print(self.api.inputArtistIDs)
-
+        # Calls the api's InspectItemsDecorator to get the input items ID's
+        item_label_text = str.lower(self.root.ids.itemLabel.text[:-2])
+        itemTextField_text = self.root.ids.itemTextField.text
+        self.api.InspectItemsDecorator(item_label_text, itemTextField_text)
+        # Displaying the selectable options?
 
     def get_songs(self):
-        # This initialization will indirectly run the BaseCreatePlaylist's
-        # __init__ which will run the entire playlist fabrication process
-        self.api = AppCreatePlaylist()
+        pass
     
     def on_start(self):
         pass

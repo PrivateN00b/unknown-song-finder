@@ -20,8 +20,9 @@ inputTracks: str = ""
 class BaseCreatePlaylist:
 
     def __init__(self):
-        print('Dev test')
-        self.CreatePlaylist()
+        # print('Dev test')
+        # self.CreatePlaylist()
+        pass
 
     @abstractmethod
     def SelectCorrectTrackID(self, arg: list(dict()), item: str, type: str, offset: int):
@@ -39,9 +40,9 @@ class BaseCreatePlaylist:
     def RecommendationAPI(self):
         pass
 
-    @abstractmethod
-    def _AskForItemAndInspect(self, itemName: str) -> list:
-        pass
+    # @abstractmethod
+    # def _AskForItemAndInspect(self, itemName: str) -> list:
+    #     pass
 
     def CreatePlaylist(self):
         pub.subscribe(self.SelectCorrectTrackID, 'selectCorrectTrack')
@@ -213,16 +214,41 @@ class AppCreatePlaylist(BaseCreatePlaylist):
     def RecommendationAPI(self):
         pass
 
-    def _AskForItemAndInspect(self, itemName: str) -> list:
-        pass
+    def _InspectItems(self, itemName: str, inputs: str) -> list:
+        """Basically _AskForItemsAndInspect except of asking inputs, it already gets one as parameter"""
+        global inputArtists, inputGenres, inputTracks, ssg, sr
+        
+        try:
+            if itemName == 'genre':
+                print(sr.DoesGenreExists(genre=inputs))
+                inputGenres = inputs # This is needed for the playlist's description
+                return inputs
+            else:
+                allItemIDs = list()
+                for currentItem in inputs.split(','):
+                    currentItem = currentItem.strip()
+                    output, itemID = sr.DoesItemExists(item=currentItem, type=itemName)
+                    print(output)
+                    allItemIDs.append(itemID)
+                
+                # This is needed for the playlist's description    
+                if itemName == 'artist':
+                    inputArtists = inputs
+                else:
+                    inputTracks = inputs
+                    
+                return allItemIDs
+        except NotFoundError as e:
+            print(e)
+            self._InspectItems(itemName, inputs)
 
-    def AskForItemAndInspectDecorator(self, itemName: str):
-        """This is a decorator/wrapper for _AskForItemAndInspect.
+    def InspectItemsDecorator(self, itemName: str, inputs: str):
+        """This is a decorator/wrapper for _InspectItems.
         After the request it stores the itemIDs to inputArtistIDs, inputGenres or inputTrackIDs.
         """
-        if any(name in itemName for name in ['Artist', 'artist', 'Artists', 'artists']):
-            self.inputArtistIDs = self._AskForItemAndInspect(itemName)
-        elif any(name in itemName for name in ['Genre', 'genre', 'Genres', 'genre']):
-            self.inputGenres = self._AskForItemAndInspect(itemName)
-        elif any(name in itemName for name in ['Track', 'track', 'Tracks', 'tracks']):
-            self.inputTrackIDs = self._AskForItemAndInspect(itemName)
+        if itemName == "artist":
+            self.inputArtistIDs = self._InspectItems(itemName, inputs)
+        elif itemName == "genre":
+            self.inputGenres = self._InspectItems(itemName, inputs)
+        elif itemName == "track":
+            self.inputTrackIDs = self._InspectItems(itemName, inputs)

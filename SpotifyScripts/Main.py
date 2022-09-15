@@ -1,9 +1,12 @@
-from Others.Exceptions.CustomExceptions import *
-from SpotifyScripts.ClientCreatePlaylist import *
+import sys
+sys.path.append('/home/toth-peter/Codes/Others/unknown-song-finder')
+
+from SpotifyScripts.ClientCreatePlaylist import ConsoleCreatePlaylist
+
 
 def Main():
     
-    ConsoleCreatePlaylist()
+    ConsoleCreatePlaylist().CreatePlaylist()
 
     # pub.subscribe(SelectCorrectTrackID, 'selectCorrectTrack')
     
@@ -18,5 +21,5 @@ def Main():
     #     ])
         
         
-# if __name__ == '__main__':
-#     Main()
+if __name__ == '__main__':
+    Main()
