@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from dataclasses import dataclass
 from pubsub import pub
 # from SpotifyScripts import Main
 from Others.Exceptions.CustomExceptions import EmptyResponseOn200StatusError, NotFoundError
@@ -19,6 +20,7 @@ inputTracks: str = ""
 class BaseCreatePlaylist:
 
     def __init__(self):
+        print('Dev test')
         self.CreatePlaylist()
 
     @abstractmethod
@@ -38,7 +40,7 @@ class BaseCreatePlaylist:
         pass
 
     @abstractmethod
-    def AskForItemAndInspect(self, itemName: str) -> list:
+    def _AskForItemAndInspect(self, itemName: str) -> list:
         pass
 
     def CreatePlaylist(self):
@@ -135,7 +137,6 @@ class ConsoleCreatePlaylist(BaseCreatePlaylist):
         
         print("Successful!")                  
     
-
     def RecommendationAPI(self):
         """This function deals with calling the official Spotify Recommandation API.
 
@@ -148,17 +149,16 @@ class ConsoleCreatePlaylist(BaseCreatePlaylist):
                 To add more than 1 information, separate them by using the (,) separator.
                 If you want to avoid filling artists, genres or tracks then leave that part(s) blank by pressing ENTER.
             """)
-        inputArtistIDs = self.AskForItemAndInspect('artist')
-        inputGenres = self.AskForItemAndInspect('genre')
-        inputTrackIDs = self.AskForItemAndInspect('track')
+        inputArtistIDs = self._AskForItemAndInspect('artist')
+        inputGenres = self._AskForItemAndInspect('genre')
+        inputTrackIDs = self._AskForItemAndInspect('track')
         
         # Gets the recommended trackID's which the API suggests
         recommendationResult = sr.GetRecommendations(seedArtists=inputArtistIDs, seedGenres=inputGenres,
                                                     seedTracks=inputTrackIDs, limit=30)
         return list(recommendationResult)
 
-    
-    def AskForItemAndInspect(self, itemName: str) -> list:
+    def _AskForItemAndInspect(self, itemName: str) -> list:
         """Checks if the requested name exists in the Spotify database.
 
         Args:
@@ -193,4 +193,36 @@ class ConsoleCreatePlaylist(BaseCreatePlaylist):
                 return allItemIDs
         except NotFoundError as e:
             print(e)
-            self.AskForItemAndInspect(itemName)
+            self._AskForItemAndInspect(itemName)
+
+class AppCreatePlaylist(BaseCreatePlaylist):
+
+    inputArtistIDs: str = ""
+    inputGenres: str = ""
+    inputTrackIDs: str = ""
+
+    def SelectCorrectTrackID(self, arg: list(dict()), item: str, type: str, offset: int):
+        pass
+
+    def GetRecommendedTrackIDs(self):
+        pass
+
+    def PlaylistUpdate(self, tracks: list):
+        pass
+
+    def RecommendationAPI(self):
+        pass
+
+    def _AskForItemAndInspect(self, itemName: str) -> list:
+        pass
+
+    def AskForItemAndInspectDecorator(self, itemName: str):
+        """This is a decorator/wrapper for _AskForItemAndInspect.
+        After the request it stores the itemIDs to inputArtistIDs, inputGenres or inputTrackIDs.
+        """
+        if any(name in itemName for name in ['Artist', 'artist', 'Artists', 'artists']):
+            self.inputArtistIDs = self._AskForItemAndInspect(itemName)
+        elif any(name in itemName for name in ['Genre', 'genre', 'Genres', 'genre']):
+            self.inputGenres = self._AskForItemAndInspect(itemName)
+        elif any(name in itemName for name in ['Track', 'track', 'Tracks', 'tracks']):
+            self.inputTrackIDs = self._AskForItemAndInspect(itemName)

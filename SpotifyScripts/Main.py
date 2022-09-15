@@ -1,10 +1,5 @@
 from Others.Exceptions.CustomExceptions import *
-from SpotifyScripts.Auth import AuthClientCredentials, AuthCode
-from SpotifyScripts.PlaylistUpdater import PlayListUpdater
-from SpotifyScripts.SpotifyRecommendation import SpotifyRecommendation
-from SpotifyScripts.SpotifySongGatherer import SpotifySongGatherer
 from SpotifyScripts.ClientCreatePlaylist import *
-from pubsub import pub
 
 def Main():
     

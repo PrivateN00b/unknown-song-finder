@@ -4,34 +4,52 @@ sys.path.append('/home/toth-peter/Codes/Others/unknown-song-finder')
 import kivymd
 from kivy.lang import Builder
 from kivymd.app import MDApp
-from SpotifyScripts import Main
+from SpotifyScripts.ClientCreatePlaylist import AppCreatePlaylist
 KV = '''
 MDScreen:
 
-    MDBoxLayout:
-        orientation: "vertical"
-        
-        MDTopAppBar:
-            title: "MDLabel"
-            
-        MDLabel:
-            text: "Artist(s):"
-            halign: "center"
+    ScrollView:
 
-        MDTextField:
-            id: kaga
-            hint_text: "Insert the artists here separated with commas"
-            helper_text: "Correct format: Artist1,Artist2,Artist3"
-            helper_text_mode: "persistent"
-            size_hint_x: .3
-            
-        MDRoundFlatButton:
-            text: "Get recommended songs"
-            text_color: "white"
-            on_press: app.get_songs()
+        MDList:
+
+            MDTopAppBar:
+                title: "MDLabel"
+
+            MDList:
+                padding: "24dp"
+                spacing: "24dp"
+
+                MDLabel:
+                    id: itemLabel
+                    adaptive_height: True
+                    text: "Artists:"
+                    halign: "center"
+
+                MDTextField:
+                    id: itemTextField
+                    adaptive_height: True
+                    mode: "round"
+                    hint_text: "Insert the artists here separated with commas"
+                    helper_text: "Correct format: Artist1,Artist2,Artist3"
+                    helper_text_mode: "persistent"
+                        
+                MDRoundFlatButton:
+                    adaptive_height: True
+                    text: "Select artists"
+                    text_color: "white"
+                    halign: "center"
+                    on_press: app.select_items()
+
+                MDLabel:
+                    id: resultLabel
+                    adaptive_height: True
+                    text: "Insert results here:"
+                    halign: "center"
 '''
 
 class MainApp(MDApp):
+
+    api: AppCreatePlaylist
 
     def build(self):
         # Theme style
@@ -41,9 +59,16 @@ class MainApp(MDApp):
         screen = Builder.load_string(KV)  
         return screen
     
+    def select_items(self):
+        item_label_text = self.root.ids.itemLabel.text
+        self.api.AskForItemAndInspectDecorator(item_label_text)
+        print(self.api.inputArtistIDs)
+
+
     def get_songs(self):
-        print(self.root.ids['kaga'].text)
-        Main.Main()
+        # This initialization will indirectly run the BaseCreatePlaylist's
+        # __init__ which will run the entire playlist fabrication process
+        self.api = AppCreatePlaylist()
     
     def on_start(self):
         pass
