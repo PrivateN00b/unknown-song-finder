@@ -39,6 +39,7 @@ MDScreen:
                     text_color: "white"
                     halign: "center"
                     on_press: app.select_items()
+                    on_release: app.exit_app()
 
                 MDLabel:
                     id: resultLabel
@@ -70,6 +71,10 @@ class MainApp(MDApp):
     
     def on_start(self):
         pass
+
+    def exit_app(self):
+        """Exits from the application duuuuhhh"""
+        MDApp.get_running_app().stop()
     
 if __name__ == '__main__':
     MainApp().run()
