@@ -20,7 +20,6 @@ inputTracks: str = ""
 class BaseCreatePlaylist:
 
     def __init__(self):
-        pub.subscribe(self.SelectCorrectTrackID, 'selectCorrectTrack')
         # self.CreatePlaylist()
         pass
 
@@ -45,6 +44,8 @@ class BaseCreatePlaylist:
     #     pass
 
     def CreatePlaylist(self):    
+        pub.subscribe(self.SelectCorrectTrackID, 'selectCorrectTrack')
+
         # Gets recommended tracks and updates the playlist with it
         recommendedTracks = self.GetRecommendedTrackIDs()  
         self.PlaylistUpdate(recommendedTracks)
@@ -200,43 +201,8 @@ class AppCreatePlaylist(BaseCreatePlaylist):
     inputGenres: str = ""
     inputTrackIDs: str = ""
 
-    def SelectCorrectTrackID(self, arg: list(dict()), item: str, type: str, offset: int):
-        """Makes the user to choose a track out of the found ones with the same names.
-        
-        Returns: Selected track's ID
-        """    
-        for currentTrack in arg:
-            print(f"Number: {currentTrack['idx']}, Name: {currentTrack['name']}, Info: {currentTrack['extra_info']}")
-        
-        print("""
-            The algorithm have found numerous tracks with the same name.
-            Navigation options (things you can write in):
-            'back' key: List the previous song options
-            'next' or any type of input key: List the next song options
-            """)
-        
-        # This will try to convert the input into -1. If you didn't write -1, for example an ENTER then it will catch it and convert to -1
-        selectedNum = input("Select the correct track by inserting the corresponding number: ")
-        try:
-            selectedNum = int(selectedNum)
-        except ValueError:
-            print('') # This is just a placeholder.
-        
-        # Checks if the user responded with -1. (If the algorithm included the correct track in the list)
-        if isinstance(selectedNum, int):        
-            print("-"*20+"\n")
-            
-            # Sends back the selected track's ID to DoesItemExists for returning the ID
-            pub.sendMessage('getSelectedTrackID', selectedID=arg[selectedNum - 1]['itemID'])
-        elif selectedNum == 'back' and offset >= 50:
-            print("Checking the previous list...\n")
-            pub.sendMessage('rerunCorrectTrackSearch', item=item, type=type, offset=(offset-50))
-        elif selectedNum == 'back' and offset < 50:
-            print("There is no previous list to check into!\n")
-        else:
-            print("Checking the next list...\n")
-            pub.sendMessage('rerunCorrectTrackSearch', item=item, type=type, offset=(offset+50))
-
+    # def SelectCorrectTrackID(self, arg: list(dict()), item: str, type: str, offset: int):
+    #     pass
 
     def GetRecommendedTrackIDs(self):
         pass
