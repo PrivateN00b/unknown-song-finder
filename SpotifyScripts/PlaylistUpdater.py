@@ -1,12 +1,4 @@
-from locale import currency
-import re
-from typing import List
-from unittest import result
-from urllib import response
-# from attr import dataclass
 import requests
-import json
-
 from SpotifyScripts.Auth import Auth
 
 class PlayListUpdater:

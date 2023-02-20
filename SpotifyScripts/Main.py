@@ -1,5 +1,5 @@
-import sys
-sys.path.append('/home/toth-peter/Codes/Others/unknown-song-finder')
+from sys import path
+path.append('/home/toth-peter/Codes/Others/unknown-song-finder')
 
 from SpotifyScripts.ClientCreatePlaylist import ConsoleCreatePlaylist
 

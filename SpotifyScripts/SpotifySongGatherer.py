@@ -1,19 +1,9 @@
 import csv
-from dataclasses import dataclass
 from datetime import date
 from genericpath import exists
 from time import sleep
 from types import NoneType
-from typing import List
-from unittest import result
-from urllib import response
-from urllib.parse import urlencode
-from matplotlib.text import OffsetFrom
-from nbformat import write
 import requests
-import json
-import base64
-
 from SpotifyScripts.Auth import Auth
 
 class SpotifySongGatherer:

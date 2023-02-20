@@ -5,7 +5,6 @@ import json
 from requests_oauthlib import OAuth2Session
 from requests.auth import HTTPBasicAuth
 import requests
-from scipy.fftpack import sc_diff
 import keyring
 
 @dataclass
