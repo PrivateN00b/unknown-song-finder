@@ -11,22 +11,22 @@ class PlayListUpdater:
     userID: str = "Hey Gleb, did you take a paper clip?" # This will get overriden in the __init__.
     PlaylistsURL: str = "*Insert Graphic design is my passion meme*"
     
-    def GetCurrentUserID(self):
-        """Returns the current user's ID response"""
-        response = requests.get(
-            url='https://api.spotify.com/v1/me',
-            headers={
-                'Authorization': f"{self.auth.token['token_type']} {self.auth.token['access_token']}"
-                })
-        
-        return response.json()['id']
-    
     def __init__(self, auth: Auth):
         self.auth = auth
         self.auth.Authorize()
         self.auth.RefreshToken()
         self.userID = self.GetCurrentUserID()
         self.PlaylistsURL = f"https://api.spotify.com/v1/users/{self.userID}/playlists"
+    
+    def GetCurrentUserID(self):
+        """Returns the current user's ID response"""
+        response = requests.get(
+            url='https://api.spotify.com/v1/me',
+            headers={
+                'Authorization': f"{self.auth.token.get('token_type')} {self.auth.token.get('access_token')}"
+                })
+        
+        return response.json()['id']
     
     def GetExistingPlaylists(self):
         """Returns the current user's playlists response"""
