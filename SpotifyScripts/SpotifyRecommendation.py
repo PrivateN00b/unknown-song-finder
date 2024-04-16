@@ -10,17 +10,17 @@ class SpotifyRecommendation:
     # Dirty code but this is needed to somehow store when the user selects the correct track and the ID will be sent by the SelectCorrectTrackID in Main.py
     selectedTrackID: str = None
     
-    def GetSelectedTrackID(self, selectedID: str):
-        self.selectedTrackID = selectedID
-    
-    def RerunCorrectTrackSearch(self, item: str, type: str, offset: int):
-        self.DoesItemExists(item, type, offset)
-    
     def __init__(self, auth: Auth):
         self.auth = auth
         self.auth.Authorize()
         # self.auth.RefreshToken()
         pub.subscribe(self.RerunCorrectTrackSearch ,'rerunCorrectTrackSearch')
+    
+    def GetSelectedTrackID(self, selectedID: str):
+        self.selectedTrackID = selectedID
+    
+    def RerunCorrectTrackSearch(self, item: str, type: str, offset: int):
+        self.DoesItemExists(item, type, offset)
     
     def GetItemIDs(self, data: dict):
         """Selects the IDs from the dictionary JSON object and returns it."""
