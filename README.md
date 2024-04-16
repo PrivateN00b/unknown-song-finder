@@ -15,21 +15,21 @@ Download one of the executable files and run it.
     - Do know that the sum of these can be MAX 5 infos
 
 Examples:
-'''
+```
 Add X artist(s)'s names if you wish: Auroveoir.
 ...
 Add X genre(s)'s names if you wish: rock
 ...
 Add X track(s)'s names if you wish: Imbolygó
-'''
+```
 
-'''
+```
 Add X artist(s)'s names if you wish:
 ...
 Add X genre(s)'s names if you wish:
 ...
 Add X track(s)'s names if you wish: Pretty and Depressed, SEISHUN WO KIRISAKU HADO, Untouchable
-'''
+```
 
 # TODO:
 - Refactoring
