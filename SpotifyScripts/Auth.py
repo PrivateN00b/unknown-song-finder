@@ -98,7 +98,18 @@ class AuthCode(Auth):
             keyring.set_password(service_name="spotify-authcode", username="Oyasumi", password=json.dumps(token))
         else:
             cls.token = json.loads(tokenFromKeyring.password)
-            # keyring.delete_password(service_name="spotify-authcode", username="Oyasumi")
+
+            # Rerun authorization if the existing token doesn't work
+            response = requests.get(
+                url='https://api.spotify.com/v1/me',
+                headers={
+                    'Authorization': f"{cls.token.get('token_type')} {cls.token.get('access_token')}"
+                    })
+            
+            if (response.status_code != 200): 
+                keyring.delete_password(service_name="spotify-authcode", username="Oyasumi")
+                cls.Authorize()
+
             
     def RefreshToken(cls):
         responseAuth = requests.post(
