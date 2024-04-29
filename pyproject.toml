@@ -1,0 +1,76 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "unknown-song-finder"
+version = "1.1.0"
+description = 'THIS IS A TEEEEEST'
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Péter Tóth", email = "petoth@proton.me" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = [ "requests", "pypubsub" ]
+
+[project.urls]
+Documentation = "https://github.com/unknown/unknown-song-finder#readme"
+Issues = "https://github.com/unknown/unknown-song-finder/issues"
+Source = "https://github.com/unknown/unknown-song-finder"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/spotify_playlist_recommend"]
+
+[tool.hatch.envs.default]
+dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
+]
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+[[tool.hatch.envs.all.matrix]]
+python = ["3.9", "3.10", "3.11", "3.12"]
+
+[tool.hatch.envs.types]
+dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/spotify_playlist_recommend tests}"
+
+[tool.coverage.run]
+source_pkgs = ["spotify_playlist_recommend", "tests"]
+branch = true
+parallel = true
+omit = []
+
+[tool.coverage.paths]
+spotify_playlist_recommend = ["src/spotify_playlist_recommend", "*/unknown-song-finder/src/spotify_playlist_recommend"]
+tests = ["tests", "*/unknown-song-finder/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

@@ -2,7 +2,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from pubsub import pub
 # from SpotifyScripts import Main
-from Others.Exceptions.CustomExceptions import EmptyResponseOn200StatusError, NotFoundError
+from CustomExceptions import EmptyResponseOn200StatusError, NotFoundError
 from SpotifyScripts.Auth import AuthClientCredentials, AuthCode
 from SpotifyScripts.PlaylistUpdater import PlayListUpdater
 from SpotifyScripts.SpotifyRecommendation import SpotifyRecommendation

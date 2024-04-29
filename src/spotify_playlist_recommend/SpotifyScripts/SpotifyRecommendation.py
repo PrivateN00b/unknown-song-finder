@@ -1,6 +1,6 @@
 import requests
 from SpotifyScripts.Auth import Auth
-from Others.Exceptions.CustomExceptions import *
+from SpotifyScripts.CustomExceptions import *
 from pubsub import pub
 
 class SpotifyRecommendation:

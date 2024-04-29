@@ -1,9 +1,9 @@
 from sys import path
 
-from SpotifyScripts.ClientCreatePlaylist import ConsoleCreatePlaylist
+from .SpotifyScripts.ClientCreatePlaylist import ConsoleCreatePlaylist
 
 
-def Main():
+def main():
     
     ConsoleCreatePlaylist().CreatePlaylist()
 
@@ -21,4 +21,4 @@ def Main():
         
         
 if __name__ == '__main__':
-    Main()
+    main()
